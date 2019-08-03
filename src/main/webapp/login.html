@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js">
+		</script>
+		<script type="text/javascript">
+			
+			function login() {
+				var role = $("input[name='role']:checked").val();
+				$.ajax({
+					type : "post",//请求的方式
+					url : "ajaxLogin.do",//请求的url
+					dataType : "text",//接收的数据类型声明
+					data : {
+						no:$("#no").val(),
+						pwd:$("#pwd").val(),
+						role:role
+					}, 
+					success : function(person) {
+						if(role=="teacher") {//登陆成功
+							if(person!=""){
+								localStorage.setItem("teacher", person);
+							}else {//登陆失败
+								alert("失败")
+								window.location.href="login.html";
+							}
+						}else if(role=="student"){
+							if(person!=""){
+								localStorage.setItem("stu", person);
+								window.location.href="toStuPage.do"; 
+							}else {//登陆失败
+								alert("账号或密码有误请重新输入")
+								window.location.href="login.html";
+							}
+						}
+					},
+					error : function() {//当ajax请求失败回调
+						alert("ajax请求失败")
+					}
+				});
+			}
+		</script>
+	</head>
+	<body>
+		<form action="login.do" method="post">
+			账号: <input type="text" id="no" name="no" value="106"/> <br />
+			密码: <input type="password" id="pwd" name="pwd" value="123"/><br />
+			角色: <input type="radio" name="role" value="teacher" />老师
+				 <input type="radio" name="role" value="student" checked="checked"/>学生<br />
+				<!-- <input type="submit" value="登陆" />  -->
+				 <button onclick="login()">ajax登陆</button>
+		</form>
+				
+	</body>
+	<script src="base.js" type="text/javascript" charset="utf-8"></script>
+	<style type="text/css">
+		form {
+			display: block;
+			width: 30rem;
+			border: 0.1rem solid red;
+			margin: 0 auto;
+			margin-top: 10rem;
+			font-size: 2rem;
+		}
+	</style>
+</html>

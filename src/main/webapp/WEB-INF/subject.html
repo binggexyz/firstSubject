@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js">
+		</script>
+		<script>
+			$(document).ready(function(){
+				showAllSubject();
+				$("#addSubjectBtn").click(function(){
+					$("#addSubject").css("display","block");
+					$("table").css("display","none");
+				})
+			});
+			
+			function sureAddSubject(){
+				$("#addSubject").css("display","none");
+				$("table").css("display","table");
+			}
+			
+			function cancleAddSubject(){
+				$("#addSubject").css("display","none");
+				$("table").css("display","table");
+			}
+			
+			function showAllSubject() {
+				alert(1);
+				$.ajax({
+					type : "get",//请求的方式
+					url : "getAllSubjects.do",//请求的url
+					dataType : "text",//接收的数据类型声明
+					data : {}, 
+					success : function(subjectList) {
+						alert(2);
+						subjectList=JSON.parse(subjectList);
+						var inf="";
+						inf+="<tr><td>id</td><td>title</td><td>itema</td><td>itemb</td><td>itemc</td><td>itemd</td><td>answer</td><td>题目类型</td><td>删除</td><td>修改</td></tr>";
+						for(let i=0;i<subjectList.length;i++){
+						var	subject=subjectList[i];
+						inf+="<tr><td>"+subject.id+"</td>";
+						inf+="<td>"+subject.title+"</td>"
+						inf+="<td>"+subject.itema+"</td>"
+						inf+="<td>"+subject.itemb+"</td>"
+						inf+="<td>"+subject.itemc+"</td>"
+						inf+="<td>"+subject.itemd+"</td>"
+						inf+="<td>"+subject.answer+"</td>"
+						inf+="<td>"+subject.categoryId+"</td>"
+						inf+="<td id='deleteSubject("+subject.id+")'>删除</td>"
+						inf+="<td>修改</td></tr>"
+						}
+						$("#subjectTable").html(inf);
+					},
+					error : function() {//当ajax请求失败回调
+						alert("ajax请求失败")
+					}
+				});
+			}
+			//根据题目id删除某一道题
+			function deleteSubject(subjectId) {
+				
+				
+			}
+			</script>
+	</head>
+	<body>
+		<div id="content">
+			<div id="top">
+				题库
+			</div>
+			<div>
+				<div id="middle1">
+					<input type="text" id="key" />
+					<button id="searchSubjectByKey()">搜索</button>
+					<button id="addSubjectBtn">添加题目</button>
+				</div>
+				<div id="middle2">
+					<table cellpadding="0" id="subjectTable">
+					</table>
+					<div id="addSubject">
+						title:<input type="text" id="subjectTitle" /><br />
+						选项A:<input type="text" id="itemA" /><br />
+						选项B:<input type="text" id="itemB" /><br />
+						选项C:<input type="text" id="itemC" /><br />
+						选项D:<input type="text" id="itemD" /><br />
+						选项answer:<input type="text" id="" /><br/>
+						categoryId:<input type="text" id=""/><br/>
+						<a href="javascript: sureAddSubject()">确定</a>
+						<a href="javascript: cancleAddSubject()">取消</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="base.js" type="text/javascript" charset="utf-8"></script>
+	<style>
+		#addSubject {
+			height: 40rem;
+			background: paleturquoise;
+			width: 100%;
+			display: none;
+			font-size: 2rem;
+		}
+		.a:hover {
+			background: palegoldenrod;
+			cursor: pointer
+		}
+
+		tr:hover {
+			background: #D2691E;
+		}
+
+		tr:first-child {
+			background-color: chocolate;
+			font-size: 2rem;
+		}
+
+		th,
+		td {
+			text-align: center;
+			padding-top: 1rem;
+			padding-bottom: 1rem;
+			color: black;
+		}
+
+		table {
+			width: 100%;
+			display: table;
+		}
+
+		table,
+		th,
+		td {
+			border: 1px solid black;
+		}
+
+		#middle1>* {
+			margin: 1rem;
+		}
+
+		#middle1 {
+			width: 80rem;
+			background: green;
+		}
+
+		#middle {
+			width: 80rem;
+			min-height: 40rem;
+			background: gray;
+		}
+
+		#top {
+			width: 80rem;
+			height: 10rem;
+			background: palegoldenrod;
+			font-size: 5rem;
+			text-align: center;
+			line-height: 10rem; //文字的行高
+		}
+
+		#content {
+			width: 80rem;
+			min-height: 50rem;
+			background: pink;
+			margin: 0 auto;
+		}
+	</style>
+</html>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xxx.mapper.SubjectMapper">
+	<select id="selectSubjectByCategoryIdAndNum" resultType="Subject">
+		select * from subject where category_id 
+		in 
+		 <foreach collection="categoryIdes" item="categoryId" index="index" open="("
+            separator="," close=")">
+            #{categoryId}
+        </foreach> 
+		order by RAND() limit #{num};
+	</select>
+	
+	<select id="selectAllSubject" resultType="subject">
+		select id,title,itema,itemb,itemc,itemd,answer,category_id from subject
+	</select>
+</mapper>
+
+
+
+
+
+
+
+

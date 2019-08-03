@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js">
+		</script>
+		<script>
+			$(document).ready(function(){
+				showStuGrade();
+			});
+		</script>
+		<script type="text/javascript">
+			//显示当前学生的所有成绩
+			function showStuGrade() {
+				//'{"id":1,"no":"007","name":"小明","sex":"女","pwd":"123456","clazzId":2}';
+				var stu = localStorage.getItem("stu");
+				//{"id":1,"no":"007","name":"小明","sex":"女","pwd":"123456","clazzId":2}
+				stu = JSON.parse(stu);
+				$("#top").html(stu.name);
+				$.ajax({
+					type : "get",//请求的方式
+					url : "getAllGradeByStuId.do",//请求的url
+					dataType : "text",//接收的数据类型声明
+					data : {
+						stuId: stu.id
+					}, 
+					success : function(gradeList) {
+						 gradeList = JSON.parse(gradeList);
+						 var gradeInf = "<tr><td>id</td><td>考试科目</td><td>分数</td></tr>";
+						 for(let i=0;i<gradeList.length; i++) {
+							 var grade = gradeList[i];
+							 gradeInf += "<tr><td>"+grade.id+"</td><td>"+grade.examinationName+"</td><td>"+grade.score+"</td></tr>";
+						 }
+						 $("#myspan").html("");
+						 $("#gradeTable").html(gradeInf);
+					},
+					error : function() {//当ajax请求失败回调
+						alert("ajax请求失败")
+					}
+				});
+			}
+		</script>
+	</head>
+	<body>
+		<div id="content">
+			<div id="top"></div>
+			<div id="middle">
+				<div id="middle1">
+					<input type="text" id="key" />
+					<button onclick="searchstuinfByKey()">搜索</button>
+				</div>
+				<div id="middle2">
+					<span id="myspan" style="font-size:40px">正在加载你的成绩,请等待......</span>
+					<table id="gradeTable" cellspacing='0' id="stuinfTable">
+						
+					</table>
+				</div>
+			</div>
+		</div>
+	</body>
+	
+	<script src="base.js" type="text/javascript" charset="utf-8"></script>
+	<style>
+		.a:hover {
+			background: palegoldenrod;
+			cursor: pointer
+		}
+
+		tr:hover {
+			background: #EEEEEE;
+		}
+
+		tr:first-child {
+			background-color: pink;
+			font-size: 2rem;
+		}
+
+		th,
+		td {
+			text-align: left;
+			padding-top: 1rem;
+			padding-bottom: 1rem;
+			color: #000000;
+			font-size: 2rem;
+		}
+
+		table {
+			width: 100%;
+			display: table;
+		}
+
+		table,
+		th,
+		td {
+			border: 1px solid black;
+		}
+
+		#middle1>* {
+			margin: 1rem;
+		}
+
+		#middle1 {
+			width: 80rem;
+			background: green;
+		}
+
+		#middle {
+			width: 80rem;
+			min-height: 40rem;
+			background: seashell;
+		}
+
+		#top {
+			width: 80rem;
+			height: 10rem;
+			background: palegoldenrod;
+			font-size: 5rem;
+			text-align: center;
+			line-height: 10rem;
+		}
+
+		#content {
+			width: 80rem;
+			min-height: 50rem;
+			background: pink;
+			margin: 0 auto;
+		}
+	</style>
+</html>

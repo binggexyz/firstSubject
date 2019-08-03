@@ -1,0 +1,13 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xxx.mapper.GradeMapper">
+	<select id="selectGradeByStuId" resultType="grade">
+		select id, stu_id, examination_id, examination_name ,score,times from grade where stu_id=#{stuId}
+	</select>
+	<select id="selectTimesByExamination" resultType="grade">
+		select max(times) from grade where examination_id=#{examinationId} and stu_id=#{stuId}
+	</select>
+	<insert id="insertGrade">
+		insert into grade(stu_id, examination_id,examination_name, score, times)
+		values(#{stuId},#{examinationId},#{examinationName},#{score},#{times})
+	</insert>
+</mapper>

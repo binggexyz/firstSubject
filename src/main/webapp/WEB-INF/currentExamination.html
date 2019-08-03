@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js">
+		</script>
+		<script type="text/javascript">
+			var stu = localStorage.getItem("stu");
+			stu = JSON.parse(stu);
+			$(document).ready(function(){
+					showStuInf();
+					countdown();
+					showExamination();
+				});
+			
+			function showStuInf() {
+				var stuInf=stu.name+" 学号:"+stu.no
+				$("#stuInfSpan").html(stuInf);
+			}
+			function countdown() {
+				var i=5;
+				var j=2;
+				var intervalId = setInterval(function(){
+					if(j>=1){
+						i--;
+						
+						if(i==-1){
+							i=4;
+							j--;
+						}
+						$("#countdownSpan").html(j+":"+i);
+					}else {
+						//提交试卷
+						//??????????
+						//关闭interval
+						clearInterval(intervalId); 
+					}
+				}, 1000)
+			}
+			function showExamination() {
+				$.ajax({
+					type : "get",//请求的方式
+					url : "getCurrentExaminationByStuId.do",//请求的url
+					dataType : "text",//接收的数据类型声明
+					data : {
+						stuId: stu.id
+					}, 
+					success : function(examination) {
+						if(examination=="") {//当前学生的班级没有正在进行的考试
+						}else {
+							//显示考试的名字
+							examination = JSON.parse(examination);
+							$("#examinationNameSpan").html(examination.name);
+							
+							//取出考试名字和考试id隐藏
+							$("#examinationId").val(examination.id);
+							$("#examinationName").val(examination.name);
+							$(".hiddenExaminationInf").css("display","none");
+							//显示所有的考试题
+							//alert(examination.category);
+							showAllSubject(examination.category,examination.subjectNum);							
+						}
+					},
+					error : function() {//当ajax请求失败回调
+						alert("ajax请求失败")
+					}
+				});
+			}
+			function showAllSubject(category,subjectNum) {
+				//alert(category+":"+subjectNum);
+				$.ajax({
+					type : "get",//请求的方式
+					url : "getSubjectByCategoryIdAndNum.do",//请求的url
+					dataType : "text",//接收的数据类型声明
+					data : {
+						categoryIdes:category,
+						subjectNum:subjectNum
+					}, 
+					success : function(subjectList) {
+						if(subjectList==""){
+							alert("没得题目");
+						}else{
+							subjectList=JSON.parse(subjectList);
+							var inf="";
+							var answer="";
+							for(let i=0;i<subjectList.length;i++){
+								var subject=subjectList[i];
+								answer+=subject.answer;
+								inf+="<p><hr/>";
+								inf+="第"+(i+1)+"道:"+subject.title;
+								inf+="<ol type='A'>";
+								inf+="<li><input value='A' type='radio' name='"+subject.id+"'>"+subject.itema+"</li>";
+								inf+="<li><input value='B' type='radio' name='"+subject.id+"'>"+subject.itemb+"</li>";
+								inf+="<li><input value='C' type='radio' name='"+subject.id+"'>"+subject.itemc+"</li>";
+								inf+="<li><input value='D' type='radio' name='"+subject.id+"'>"+subject.itemd+"</li>";
+								inf+="</ol>";
+								inf+="</p>";
+							}
+						$("#subjectesDiv").html(inf);
+						}
+					},
+					error : function() {//当ajax请求失败回调
+						alert("ajax请求失败")
+					}
+				});
+			}
+			//提交考试成绩
+			function submitExamination() {
+			
+				//取出学生提交的答案
+				var inputes = $("#subjectesDiv input:radio:checked");
+				var answerStu="";
+				for(let i=0;i<inputes.length;i++){
+					var v=	inputes[i].value;
+					answer1 += v;
+				}
+				//得到正确答案
+				var answer2 = $("#answer").val(); 
+				//做对了多少道题
+				var num = 0;
+				for(var i=0; i<answer1.length; i++) {
+					a1_c = answer1.charAt(i);
+					a2_c = answer2.charAt(i);
+					if(a1_c==a2_c) {
+						num++;
+					}
+				}
+				//计算得到的分数
+				var score = num*100/answer1.length
+				var examinationId=$("#examinationId").val();
+				var examinationName=$("#examinationName").val();
+				var stuId=stu.id;
+				$.ajax({
+					type : "post",//请求的方式
+					url : "getExamination.do",//请求的url
+					dataType : "text",//接收的数据类型声明
+					data : {
+						
+						stuId:stu_id, 
+						examinationId:examination_id, 
+						examinationName:examination_name, 
+						score:score
+					}, 
+					success : function(msg) {
+						//显示分数
+						$("#scoreSpan").html(score);
+					},
+					error : function() {//当ajax请求失败回调
+						alert("ajax请求失败")
+					}
+				});
+			}
+		</script>
+	</head>
+	<body>
+	
+	<div>
+		<input class="hiddenExaminationInf" type="text" id="examinationId"/>
+		<input class="hiddenExaminationInf" type="text" id="examinationName"/>
+		<input class="hiddenExaminationInf" type="text" id="answer" />
+		<div>学生:<span id="stuInfSpan"></span>---科目:<span id="examinationNameSpan">
+		</span> <span id="countdownSpan"></span><br >
+		<button>结束</button>
+				--------得分99<span id="scoreSpan" style="color:red"></span>
+			</div>
+			
+			<div id="subjectesDiv">
+				<p><hr/>
+					<ol type="A">
+						<li><input type='radio' name='1'>故意</li>
+					</ol>
+				</p>
+			</div>
+				<div>
+					<hr/>
+					<button id="submitExamination">提交</button>
+				</div>
+		</div>
+	</body>
+	<script src="base.js" type="text/javascript" charset="utf-8"></script>
+	<style type="text/css">
+		input[type='radio'] {
+					width: 1rem;
+					height: 1rem;
+				}
+	
+		body {
+			font-size: 2rem;
+			margin: 5rem;
+		}
+	</style>
+</html>

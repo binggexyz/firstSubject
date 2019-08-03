@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js">
+	
+</script>
+<script>
+	$(document).ready(function() {
+		showClazzAll();
+		$("#addClazzBtn").click(function() {
+			$("#name").val("");
+			$("#major").val("");
+			$("#addClazz").css("display", "block");
+			$("table").css("display", "none");
+		})
+	});
+	
+	function intoStu(clazzId,clazzName) {
+		location.href="intoStu.do?clazzId="+clazzId+"&clazzName="+clazzName;
+	}
+	function handleShowAllClazz(list) {
+		list = JSON.parse(list);
+		var clazzInf = "<tr><td>id</td><td>name</td><td>major</td><td>begin_date</td><td>删除</td><td>修改</td><td>进入</td></tr>";
+		for (let i = 0; i < list.length; i++) {
+			var clazz = list[i];
+			clazzInf += "<tr>";
+			clazzInf += "<td>" + clazz.id + "</td>";
+			clazzInf += "<td>" + clazz.name + "</td>";
+			clazzInf += "<td>" + clazz.major + "</td>";
+			clazzInf += "<td>" + clazz.beginDate + "</td>";
+			clazzInf += "<td class='deletetd a' onclick='deleteClazzById("+ clazz.id + ");'>删除</td>";
+			clazzInf += "<td class='updatetd a'>修改</td>";
+			clazzInf += "<td class='a' onclick='intoStu("+clazz.id+",\""+clazz.name+"\")'>进入</td>";
+			clazzInf += "</tr>";
+		}
+		$("#clazzTable").html(clazzInf);
+	}
+	function searchClazzBylike(){
+		$.ajax({
+			type : "get",//请求的方式 ("get")
+			url : "getClazzBylike.do",//请求的url
+			dataType : "text",//接收的数据类型声明
+			data : {
+				key: $("#key").val()
+			},//发送请求参数
+			success : function(list) {//当ajax成功返回后回调
+				handleShowAllClazz(list);
+			},
+			error : function() {//当ajax请求失败回调
+				alert("ajax请求失败")
+			}
+		});
+	}
+	//确认添加一个班级
+	function sureAddClazz() {
+		var name = $("#name").val();
+		var major = $("#major").val();
+		//注册班级
+		$.ajax({
+			type : "post",//请求的方式 ("post")
+			url : "addClazz.do",//请求的url
+			dataType : "text",//接收的数据类型声明
+			data : {
+				name:name,
+				major:major
+			},//发送请求参数
+			success : function(inf) {//当ajax成功返回后回调
+				if(inf=="yes"){//注册成功
+					showClazzAll();
+					$("#addClazz").css("display", "none");
+					$("table").css("display", "table");
+				}else{
+					alert("注册失败");
+				}
+			},
+			error : function() {//当ajax请求失败回调
+				alert("ajax请求失败")
+			}
+		});
+	}
+	function deleteClazzById(clazzId) {
+		$.ajax({type : "post",//请求的方式 ("post")
+			url : "deleteById.do",//请求的url
+			dataType : "text",//接收的数据类型声明
+			data : {
+				id:clazzId
+			},//发送请求参数
+			success : function(inf) {//当ajax成功返回后回调
+				if(inf=="yes"){//删除成功
+					showClazzAll();
+				}else{
+					alert("删除失败");
+				}
+			},
+			error : function() {//当ajax请求失败回调
+				alert("ajax请求失败")
+			}
+		});
+		}
+	function cancleAddClazz() {
+		$("#addClazz").css("display", "none");
+		$("table").css("display", "table");
+	}
+
+	function showClazzAll() {
+		$.ajax({type : "get",//请求的方式 ("get")
+					url : "getAllclazz.do",//请求的url
+					dataType : "text",//接收的数据类型声明
+					data : {},//发送请求参数
+					success : function(list) {//当ajax成功返回后回调
+						handleShowAllClazz(list);
+					},
+					error : function() {//当ajax请求失败回调
+						alert("ajax请求失败")
+					}
+				});
+	}
+	
+</script>
+</head>
+<body>
+	<div id="content">
+		<div id="top">华清远见</div>
+		<div>
+			<div id="middle1">
+				<input type="text" id="key" />
+				<button id="" onclick="searchClazzBylike()">搜索班级</button>
+				<button id="addClazzBtn">添加班级</button>
+			</div>
+			<div id="middle2">
+				<table cellpadding="0" id="clazzTable">
+				</table>
+				<div id="addClazz">
+					班名:<input type="text" id="name" /><br /> 专业:<input type="text"
+						id="major" /><br /> <a href="javascript: sureAddClazz()">确定</a>
+					<a href="javascript: cancleAddClazz()">取消</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script src="base.js" type="text/javascript" charset="utf-8"></script>
+<style>
+#addClazz {
+	height: 40rem;
+	background: paleturquoise;
+	width: 100%;
+	display: none;
+	font-size: 2rem;
+}
+
+.a:hover {
+	background: palegoldenrod;
+	cursor: pointer
+}
+
+tr:hover {
+	background: #D2691E;
+}
+
+tr:first-child {
+	background-color: chocolate;
+	font-size: 2rem;
+}
+
+th, td {
+	text-align: center;
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+	color: black;
+}
+
+table {
+	width: 100%;
+	display: table;
+}
+
+table, th, td {
+	border: 1px solid black;
+}
+
+#middle1>* {
+	margin: 1rem;
+}
+
+#middle1 {
+	width: 80rem;
+	background: green;
+}
+
+#middle {
+	width: 80rem;
+	min-height: 40rem;
+	background: gray;
+}
+
+#top {
+	width: 80rem;
+	height: 10rem;
+	background: palegoldenrod;
+	font-size: 5rem;
+	text-align: center;
+	line-height: 10rem;
+	文字的行高
+}
+
+#content {
+	width: 80rem;
+	min-height: 50rem;
+	background: pink;
+	margin: 0 auto;
+}
+</style>
+</html>

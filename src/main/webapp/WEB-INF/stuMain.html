@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>学生主页</title>
+		<style type="text/css">
+			li {
+				cursor:pointer;
+			}
+			li:hover {
+				color: red;
+			}
+			body {
+				font-size: 40px;
+			}
+		</style>
+		
+		<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js">
+		</script>
+		<script type="text/javascript">
+			$(document).ready(function(){
+				showExamination();
+			});
+				
+			function showExamination() {
+				var stu = localStorage.getItem("stu");
+				stu = JSON.parse(stu);
+				$.ajax({
+					type : "get",//请求的方式
+					url : "getCurrentExaminationByStuId.do",//请求的url
+					dataType : "text",//接收的数据类型声明
+					data : {
+						stuId: stu.id
+					}, 
+					success : function(examination) {
+						if(examination=="") {//当前学生的班级没有正在进行的考试
+							var inf = "<li use='pwd'>修改密码</li><li use='grade'>查看成绩</li>";
+							$("#UlId").html(inf);
+						}else {
+							examination = JSON.parse(examination);
+							var name = examination.name;
+							var inf = "<li use='pwd'>修改密码</li><li use='grade'>查看成绩</li>";
+							inf += "<li use='examination'><span>进入&lt;&lt;"+name+"&gt;&gt;的考试....</span></li>";
+							$("#UlId").html(inf);
+						}
+						how();
+					},
+					error : function() {//当ajax请求失败回调
+						alert("ajax请求失败")
+					}
+				});
+			}
+			
+			function how() {
+				$("li").click(function(){
+					var use = $(this).attr("use");
+					if(use=="pwd") {
+						//修改密码
+					}else if(use=="grade") {
+						//查看成绩
+						location.href="toStuGrade.do";
+					}else if(use=="examination") {
+						//进入考试
+						location.href="toCurrentExamination.do";
+					}
+				});
+			}
+		</script>
+	</head>
+	<body>
+		<ul id="UlId">
+		</ul>
+	</body>
+</html>

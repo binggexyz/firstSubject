@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xxx.mapper.StuMapper">
+	<select id="selectStuByclzzId" resultType="stu">
+		select id, no,name,
+		sex, pwd , clazz_id from stu where clazz_id=#{clazzId}
+	</select>
+	
+	<select id="selectStuByNoAndPwd" resultType="stu">
+		select id, no,name,
+		sex, pwd , clazz_id from stu where no=#{no} and pwd=#{pwd}
+	</select>
+	<delete id="deleteStuById">
+		delete from stu where id=#{id}
+	</delete>
+	<update id="updateByStuId">
+		update stu set no=#{no},name=#{name},sex=#{sex},pwd=#{pwd},clazz_id=#{clazzId} where id=#{id}			
+	</update>
+	<insert id="insertStu">
+		insert into stu(no,name,sex,pwd,clazz_id)values(#{no},#{name},#{sex},#{pwd},#{clazzId})
+	</insert>
+	<select id="selectBylike" resultType="stu">
+		select id,no,name,sex,pwd,clazz_id from stu where 1=1
+		<if test="no!=null and no!=''">
+		and no like #{no}
+		</if>
+		<if test="name!=null and name!=''">
+		or name like #{name} 
+		</if>
+		<if test="sex!=null and sex!=''">
+		or sex like #{sex}
+		</if>
+		and clazz_id=#{clazzId}
+	</select>
+</mapper>
